@@ -34,15 +34,23 @@ const contactSchema = new Schema({
 contactSchema.post("save", handleMongooseError);
 
 const addSchema = Joi.object({
-    name: Joi.string().required(),
-    email: Joi.string().required(),
+    name: Joi.string().min(3).max(40).required(),
+    email: Joi.string().email().required(),
     phone: Joi.string().pattern(phoneValeo).required(),
     favorite: Joi.boolean(),
-});
+}).messages({
+    'string.min': 'The {#label} field must contain at least {#limit} characters',
+    'string.max': 'The {#label} field cannot be longer than {#limit} characters',
+    'string.email': 'The field {#label} must be a valid email',
+    'any.required': 'missing required {#label} field',
+    'string.pattern.base': 'The field {#label} must be a valid phone, example: (***) ***-****'
+  });
 
 const updateFavoriteSchema = Joi.object({
     favorite: Joi.boolean().required(),
-})
+}).messages({
+    'any.required': 'Missing field favorite',
+});
 
 const schemas = { addSchema, updateFavoriteSchema };
 
